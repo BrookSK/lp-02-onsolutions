@@ -7,7 +7,7 @@
 <title>Editor de conteúdo legal | ON Solutions Brasil</title>
 <link rel="icon" type="image/png" href="../assets/img/on-solutions-logo.png">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/styles.css?v=3">
+<link rel="stylesheet" href="../css/styles.css?v=4">
 </head>
 <body>
 <main class="legal"><div class="w"><div class="legal-box">
@@ -35,22 +35,22 @@
     <div class="ed-msg" id="ed-msg" role="status" aria-live="polite"></div>
   </form>
 </div></div></main>
-<script src="../js/legal.js?v=2"></script>
+<script src="../js/legal.js?v=3"></script>
 <script>
 (function () {
   "use strict";
   function J(a) { return a.join("\n\n"); }
   var DEFAULTS = {
     "lgpd": {
-      title: "LGPD e Proteção de Dados",
+      title: "LGPD",
       body: J([
         "Última atualização: 12/11/2026",
         "## Compromisso com a LGPD",
         "A ON Solutions está comprometida com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018). Tratamos seus dados pessoais com transparência, segurança e responsabilidade.",
         "## Controlador de Dados",
-        "ON Solutions\nEmail: contato@onsolutionsbrasil.com.br",
+        "**ON Solutions**\nEmail: contato@onsolutionsbrasil.com.br\nEndereço:",
         "## Bases Legais para Tratamento",
-        "- Consentimento: Newsletter, cookies de marketing\n- Execução de contrato: Prestação de serviços contratados\n- Interesse legítimo: Análises de uso, melhoria dos serviços\n- Obrigação legal: Cumprimento de legislação fiscal e tributária",
+        "- **Consentimento:** Newsletter, cookies de marketing\n- **Execução de contrato:** Prestação de serviços contratados\n- **Interesse legítimo:** Análises de uso, melhoria dos serviços\n- **Obrigação legal:** Cumprimento de legislação fiscal e tributária",
         "## Seus Direitos como Titular",
         "Conforme a LGPD, você possui os seguintes direitos:",
         "- Confirmação da existência de tratamento\n- Acesso aos dados\n- Correção de dados incompletos ou desatualizados\n- Anonimização, bloqueio ou eliminação de dados desnecessários\n- Portabilidade dos dados\n- Eliminação dos dados tratados com consentimento\n- Informação sobre compartilhamento\n- Possibilidade de não fornecer consentimento e consequências\n- Revogação do consentimento",
@@ -114,10 +114,10 @@
     window.ONLegal.reset(cur); load(); msg("Conteúdo padrão restaurado.");
   });
   document.getElementById("ed-copy").addEventListener("click", function () {
-    var html = "<h1 class=\"t2 legal-h\">" + esc(t.value.trim()) + "</h1>\n" +
-      b.value.replace(/\r\n/g, "\n").split(/\n{2,}/).map(function (x) { return x.trim(); }).filter(Boolean).map(function (x) {
-        var ls = x.split("\n"); if (x.indexOf("## ") === 0) return "<h2>" + esc(x.slice(3)) + "</h2>"; if (ls.every(function (l) { return l.indexOf("- ") === 0; })) return "<ul>" + ls.map(function (l) { return "<li>" + esc(l.slice(2)) + "</li>"; }).join("") + "</ul>"; return "<p>" + esc(x) + "</p>";
-      }).join("\n");
+    // Mesma marcacao que a pagina publica gera (conteudo interno do <article>)
+    var tmp = document.createElement("div");
+    window.ONLegal.render(tmp, { title: t.value.trim(), body: b.value });
+    var html = tmp.innerHTML.replace(/<\/(p|h2|ul|div|li)>/g, "</$1>\n");
     if (navigator.clipboard) navigator.clipboard.writeText(html).then(function () { msg("HTML copiado."); }, function () { msg("Não foi possível copiar."); });
     else msg("Copiar não é suportado neste navegador.");
   });
