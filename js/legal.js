@@ -35,8 +35,12 @@
       String(data.body).replace(/\r\n/g, "\n").split(/\n{2,}/).forEach(function (blk) {
         blk = blk.trim();
         if (!blk) return;
-        var el;
+        var el, lines = blk.split("\n");
         if (blk.indexOf("## ") === 0) { el = document.createElement("h2"); el.textContent = blk.slice(3); }
+        else if (lines.every(function (l) { return l.indexOf("- ") === 0; })) {
+          el = document.createElement("ul");
+          lines.forEach(function (l) { var li = document.createElement("li"); li.textContent = l.slice(2); el.appendChild(li); });
+        }
         else { el = document.createElement("p"); el.textContent = blk; }
         container.appendChild(el);
       });
