@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Editor de conteúdo legal | ON Solutions Brasil</title>
+<link rel="icon" type="image/png" href="../assets/img/on-solutions-logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/styles.css?v=3">
+</head>
+<body>
+<main class="legal"><div class="w"><div class="legal-box">
+  <a class="legal-back" href="../">&larr; Voltar ao site</a>
+  <h1 class="t2">Editor de conteúdo legal</h1>
+  <p>Edite e salve o texto de cada página. Parágrafos são separados por uma linha em branco; uma linha iniciada com <code>## </code> vira subtítulo.</p>
+  <p><strong>Atenção:</strong> o salvamento é feito neste navegador (sem servidor). Para publicar, use “Copiar HTML” e cole o resultado na página correspondente.</p>
+
+  <div class="ed-tabs" role="tablist" aria-label="Página">
+    <button type="button" role="tab" data-page="lgpd" aria-selected="true">LGPD e Proteção de Dados</button>
+    <button type="button" role="tab" data-page="politica-de-privacidade" aria-selected="false">Política de Privacidade</button>
+  </div>
+
+  <form class="ed" id="ed" autocomplete="off">
+    <label for="ed-title">Título</label>
+    <input id="ed-title" type="text" maxlength="120">
+    <label for="ed-body">Conteúdo</label>
+    <textarea id="ed-body"></textarea>
+    <div class="ed-act">
+      <button type="submit" class="pri">Salvar</button>
+      <button type="button" id="ed-view">Ver página</button>
+      <button type="button" id="ed-copy">Copiar HTML</button>
+      <button type="button" id="ed-reset">Restaurar padrão</button>
+    </div>
+    <div class="ed-msg" id="ed-msg" role="status" aria-live="polite"></div>
+  </form>
+</div></div></main>
+<script src="../js/legal.js?v=1"></script>
+<script>
+(function () {
+  "use strict";
+  var DEFAULTS = {
+    "lgpd": {
+      title: "LGPD e Proteção de Dados",
+      body: "A empresa valoriza a privacidade e a segurança dos dados pessoais de seus usuários, adotando medidas de proteção e tratamento das informações conforme a Lei Geral de Proteção de Dados (Lei nº 13.709/2018)."
+    },
+    "politica-de-privacidade": {
+      title: "Política de Privacidade",
+      body: "As informações fornecidas pelos usuários, como nome, e-mail e telefone, poderão ser utilizadas para atendimento, comunicação e prestação dos serviços oferecidos pela empresa, respeitando as finalidades informadas e a legislação aplicável."
+    }
+  };
+  var cur = "lgpd";
+  var t = document.getElementById("ed-title"), b = document.getElementById("ed-body"), m = document.getElementById("ed-msg");
+  function msg(s) { m.textContent = s; }
+  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  function load() {
+    var d = window.ONLegal.load(cur) || DEFAULTS[cur];
+    t.value = d.title; b.value = d.body; msg("");
+  }
+  document.querySelectorAll("[data-page]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      cur = btn.getAttribute("data-page");
+      document.querySelectorAll("[data-page]").forEach(function (o) { o.setAttribute("aria-selected", String(o === btn)); });
+      load();
+    });
+  });
+  document.getElementById("ed").addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (!t.value.trim() || !b.value.trim()) { msg("Preencha título e conteúdo."); return; }
+    window.ONLegal.save(cur, { title: t.value.trim(), body: b.value });
+    msg("Conteúdo salvo.");
+  });
+  document.getElementById("ed-view").addEventListener("click", function () { window.open("../" + cur + "/", "_blank"); });
+  document.getElementById("ed-reset").addEventListener("click", function () {
+    window.ONLegal.reset(cur); load(); msg("Conteúdo padrão restaurado.");
+  });
+  document.getElementById("ed-copy").addEventListener("click", function () {
+    var html = "<h1 class=\"t2 legal-h\">" + esc(t.value.trim()) + "</h1>\n" +
+      b.value.replace(/\r\n/g, "\n").split(/\n{2,}/).map(function (x) { return x.trim(); }).filter(Boolean).map(function (x) {
+        return x.indexOf("## ") === 0 ? "<h2>" + esc(x.slice(3)) + "</h2>" : "<p>" + esc(x) + "</p>";
+      }).join("\n");
+    if (navigator.clipboard) navigator.clipboard.writeText(html).then(function () { msg("HTML copiado."); }, function () { msg("Não foi possível copiar."); });
+    else msg("Copiar não é suportado neste navegador.");
+  });
+  load();
+})();
+</script>
+</body>
+</html>

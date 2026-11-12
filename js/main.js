@@ -140,12 +140,36 @@
           .forEach(function (c) { track.appendChild(c.cloneNode(true)); });
       }
       if (reduce) return;
-      [].slice.call(track.children).forEach(function (c) {
-        var k = c.cloneNode(true); k.setAttribute("aria-hidden", "true"); track.appendChild(k);
+      var originals = [].slice.call(track.children);
+      var SPEED = 40; // px por segundo (constante em qualquer largura)
+      var lastW = 0;
+      // Largura exata de um conjunto completo (inclui espacamento de cada logotipo)
+      function setWidth() {
+        var first = originals[0], last = originals[originals.length - 1];
+        var cs = window.getComputedStyle(last);
+        return last.offsetLeft + last.offsetWidth + (parseFloat(cs.marginRight) || 0) - first.offsetLeft;
+      }
+      // Clona o conjunto o suficiente para cobrir a tela + 1 conjunto, e anima exatamente 1 conjunto
+      function build() {
+        var w = setWidth();
+        if (!(w > 0)) return;
+        var need = Math.ceil(mq.clientWidth / w) + 1;
+        [].slice.call(track.querySelectorAll("[aria-hidden]")).forEach(function (n) { track.removeChild(n); });
+        for (var i = 0; i < need; i++) {
+          originals.forEach(function (c) {
+            var k = c.cloneNode(true); k.setAttribute("aria-hidden", "true"); track.appendChild(k);
+          });
+        }
+        mq.style.setProperty("--shift", w + "px");
+        mq.style.setProperty("--dur", (w / SPEED) + "s");
+        lastW = mq.clientWidth;
+      }
+      build();
+      var rt;
+      window.addEventListener("resize", function () {
+        clearTimeout(rt);
+        rt = setTimeout(function () { if (mq.clientWidth !== lastW) build(); }, 150);
       });
-      function setSpeed() { var half = track.scrollWidth / 2; if (half > 0) mq.style.setProperty("--dur", Math.max(30, half / 40) + "s"); }
-      setSpeed();
-      window.addEventListener("resize", setSpeed);
       mq.classList.add("is-looping");
       var t;
       mq.addEventListener("touchstart", function () { clearTimeout(t); mq.classList.add("is-paused"); }, { passive: true });

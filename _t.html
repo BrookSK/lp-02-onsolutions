@@ -1,0 +1,25 @@
+<!DOCTYPE html><body><pre id="o">running</pre>
+<script>
+var res={};
+function frame(src){return new Promise(function(ok){var f=document.createElement('iframe');f.src=src;f.onload=function(){setTimeout(function(){ok(f)},200)};document.body.appendChild(f);});}
+(async function(){
+  var pub1=await frame('/lgpd/'); res.lgpdDefault=pub1.contentDocument.querySelector('[data-legal] p').textContent.slice(0,40);
+  var pub2=await frame('/politica-de-privacidade/'); res.privDefault=pub2.contentDocument.querySelector('[data-legal] p').textContent.slice(0,40);
+  var ad=await frame('/admin-conteudo/'); var d=ad.contentDocument;
+  d.getElementById('ed-title').value='LGPD EDITADA'; d.getElementById('ed-body').value='Paragrafo A <b>x</b>\n\n## Sub\n\nParagrafo B';
+  d.getElementById('ed').dispatchEvent(new Event('submit',{cancelable:true}));
+  res.msg=d.getElementById('ed-msg').textContent;
+  var l2=await frame('/lgpd/'); var a=l2.contentDocument.querySelector('[data-legal]');
+  res.lgpdAfter={h1:a.querySelector('h1').textContent,h2:a.querySelector('h2')&&a.querySelector('h2').textContent,ps:[].map.call(a.querySelectorAll('p'),function(p){return p.textContent}),bTags:a.querySelectorAll('b').length};
+  var p2=await frame('/politica-de-privacidade/'); res.privAfter=p2.contentDocument.querySelector('[data-legal] h1').textContent+' | '+p2.contentDocument.querySelector('[data-legal] p').textContent.slice(0,30);
+  // aba politica no admin
+  var ad2=await frame('/admin-conteudo/'); var d2=ad2.contentDocument;
+  res.adminLgpdReload=d2.getElementById('ed-title').value;
+  d2.querySelector('[data-page=politica-de-privacidade]').click(); res.adminPrivTitle=d2.getElementById('ed-title').value;
+  d2.getElementById('ed-reset').click();
+  d2.querySelector('[data-page=lgpd]').click(); d2.getElementById('ed-reset').click();
+  var l3=await frame('/lgpd/'); res.lgpdReset=l3.contentDocument.querySelector('[data-legal] h1').textContent;
+  var home=await frame('/index.html'); res.footerLinks=[].map.call(home.contentDocument.querySelectorAll('.foot .lk a'),function(a){return a.getAttribute('href')});
+  document.getElementById('o').textContent=JSON.stringify(res,null,1);
+})();
+</script></body>
