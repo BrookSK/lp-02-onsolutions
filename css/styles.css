@@ -226,16 +226,3 @@ details p{padding:0 22px 22px;color:var(--soft);font-size:15.5px;line-height:1.7
 .wa-fab:hover{background:var(--waD)}
 .wa-fab svg{width:18px;height:18px;fill:currentColor}
 @media(max-width:600px){.legal{padding:44px 0 90px}.wa-fab{left:14px;right:14px;justify-content:center;bottom:14px}}
-
-/* ---------- Editor de conteudo ---------- */
-.ed{display:grid;gap:12px;margin-top:20px}
-.ed label{font-weight:600;font-size:14px}
-.ed input,.ed textarea{width:100%;font:inherit;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--text)}
-.ed textarea{min-height:320px;resize:vertical;line-height:1.6}
-.ed-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:20px}
-.ed-tabs button,.ed-act button{font:inherit;font-weight:600;font-size:14px;padding:10px 16px;border-radius:999px;border:1px solid var(--line);background:#fff;color:var(--text);cursor:pointer}
-.ed-tabs button[aria-selected=true]{background:var(--navy);color:#fff;border-color:var(--navy)}
-.ed-act{display:flex;gap:10px;flex-wrap:wrap}
-.ed-act .pri{background:var(--wa);border-color:var(--wa);color:#06240F}
-.ed-msg{min-height:22px;font-size:14px;color:var(--tealD);font-weight:600}
-.legal-back{display:inline-block;margin-bottom:18px;font-size:14px;color:var(--tealD);text-decoration:none;font-weight:600}
